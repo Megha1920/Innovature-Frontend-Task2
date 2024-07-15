@@ -4,7 +4,8 @@ import { fetchTasks, createTask, updateTask, deleteTask } from '../redux/taskSli
 
 const TaskPage = () => {
   const dispatch = useDispatch();
-  const { tasks = [] } = useSelector((state) => state.task); // Default to an empty array
+  const tasks = useSelector((state) => state.task.tasks);
+
   const [taskData, setTaskData] = useState({
     Title: '',
     Description: '',
@@ -13,6 +14,10 @@ const TaskPage = () => {
   useEffect(() => {
     dispatch(fetchTasks());
   }, [dispatch]);
+
+  useEffect(() => {
+    console.log("Tasks from Redux state:", tasks);
+  }, [tasks]);
 
   const handleChange = (e) => {
     setTaskData({
@@ -23,14 +28,13 @@ const TaskPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const user = localStorage.getItem('user_id'); // Ensure user_id is correctly stored
+    const user = localStorage.getItem('user_id');
     const newTask = { ...taskData, user };
-    console.log("Task data to be sent:", newTask); // Log the data being sent
     dispatch(createTask(newTask));
     setTaskData({
       Title: '',
       Description: '',
-    }); // Clear input fields after submission
+    });
   };
 
   const handleUpdate = (uid) => {
@@ -52,20 +56,12 @@ const TaskPage = () => {
       <ul style={{ listStyleType: 'none', padding: '0' }}>
         {tasks.length > 0 ? (
           tasks.map((task) => (
-            // Ensure task and its properties are defined
-            task ? (
-              <li key={task.uid} style={{ margin: '10px 0', padding: '10px', backgroundColor: '#ffffff', border: '1px solid #e0e0e0', borderRadius: '4px' }}>
-                <h3 style={{ marginTop: '0', fontSize: '20px' }}>{task.Title || 'No Title'}</h3>
-                <p style={{ color: '#555' }}>{task.Description || 'No Description'}</p>
-                <button style={{ margin: '0 5px', padding: '10px 20px', fontSize: '16px', cursor: 'pointer', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px' }} onClick={() => handleUpdate(task.uid)}>Update</button>
-                <button style={{ margin: '0 5px', padding: '10px 20px', fontSize: '16px', cursor: 'pointer', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px' }} onClick={() => handleDelete(task.uid)}>Delete</button>
-              </li>
-            ) : (
-              <li key={Math.random()} style={{ margin: '10px 0', padding: '10px', backgroundColor: '#ffffff', border: '1px solid #e0e0e0', borderRadius: '4px' }}>
-                <h3 style={{ marginTop: '0', fontSize: '20px' }}>No Task Data</h3>
-                <p style={{ color: '#555' }}>No Description</p>
-              </li>
-            )
+            <li key={task.uid} style={{ margin: '10px 0', padding: '10px', backgroundColor: '#ffffff', border: '1px solid #e0e0e0', borderRadius: '4px' }}>
+              <h3 style={{ marginTop: '0', fontSize: '20px' }}>{task.Title || 'No Title'}</h3>
+              <p style={{ color: '#555' }}>{task.Description || 'No Description'}</p>
+              <button style={{ margin: '0 5px', padding: '10px 20px', fontSize: '16px', cursor: 'pointer', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px' }} onClick={() => handleUpdate(task.uid)}>Update</button>
+              <button style={{ margin: '0 5px', padding: '10px 20px', fontSize: '16px', cursor: 'pointer', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px' }} onClick={() => handleDelete(task.uid)}>Delete</button>
+            </li>
           ))
         ) : (
           <p>No tasks available</p>
