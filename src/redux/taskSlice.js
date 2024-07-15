@@ -31,7 +31,8 @@ export const createTask = createAsyncThunk('task/createTask', async (taskData) =
 
 export const updateTask = createAsyncThunk('task/updateTask', async (taskData) => {
   const token = localStorage.getItem('access_token');
-  const response = await axios.patch(API_URL, taskData, {
+  const { uid, ...rest } = taskData;
+  const response = await axios.patch(`${API_URL}${uid}/`, rest, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -41,13 +42,12 @@ export const updateTask = createAsyncThunk('task/updateTask', async (taskData) =
 
 export const deleteTask = createAsyncThunk('task/deleteTask', async (uid) => {
   const token = localStorage.getItem('access_token');
-  const response = await axios.delete(API_URL, {
-    data: { uid },
+  await axios.delete(`${API_URL}${uid}/`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
-  return response.data;
+  return { uid };
 });
 
 export const taskSlice = createSlice({
@@ -67,11 +67,14 @@ export const taskSlice = createSlice({
         state.tasks.push(action.payload);
       })
       .addCase(updateTask.fulfilled, (state, action) => {
-        const index = state.tasks.findIndex((task) => task.uid === action.payload.uid);
-        state.tasks[index] = action.payload;
+        const updatedTask = action.payload.data; // Assuming payload structure from backend
+        const index = state.tasks.findIndex((task) => task.uid === updatedTask.uid);
+        if (index !== -1) {
+          state.tasks[index] = updatedTask;
+        }
       })
       .addCase(deleteTask.fulfilled, (state, action) => {
-        state.tasks = state.tasks.filter((task) => task.uid !== action.meta.arg);
+        state.tasks = state.tasks.filter((task) => task.uid !== action.payload.uid);
       })
       .addCase(fetchTasks.rejected, (state, action) => {
         state.status = 'failed';

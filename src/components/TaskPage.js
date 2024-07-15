@@ -5,6 +5,8 @@ import { fetchTasks, createTask, updateTask, deleteTask } from '../redux/taskSli
 const TaskPage = () => {
   const dispatch = useDispatch();
   const tasks = useSelector((state) => state.task.tasks);
+  const [editMode, setEditMode] = useState(false);
+  const [currentTask, setCurrentTask] = useState(null);
 
   const [taskData, setTaskData] = useState({
     Title: '',
@@ -30,17 +32,27 @@ const TaskPage = () => {
     e.preventDefault();
     const user = localStorage.getItem('user_id');
     const newTask = { ...taskData, user };
-    dispatch(createTask(newTask));
+    if (editMode && currentTask) {
+      const updatedTask = { ...taskData, uid: currentTask.uid, user: currentTask.user };
+      dispatch(updateTask(updatedTask)).then(() => {
+        setEditMode(false); // Reset edit mode after update
+        setCurrentTask(null); // Clear current task after update
+      });
+    } else {
+      dispatch(createTask(newTask));
+    }
+    setTaskData({ Title: '', Description: '' }); // Clear form fields after submission
+  };
+  
+  const handleUpdate = (task) => {
+    setEditMode(true);
+    setCurrentTask(task);
     setTaskData({
-      Title: '',
-      Description: '',
+      Title: task.Title,
+      Description: task.Description,
     });
   };
-
-  const handleUpdate = (uid) => {
-    const updatedTask = { ...taskData, uid };
-    dispatch(updateTask(updatedTask));
-  };
+  
 
   const handleDelete = (uid) => {
     dispatch(deleteTask(uid));
@@ -51,7 +63,7 @@ const TaskPage = () => {
       <form onSubmit={handleSubmit}>
         <input style={{ width: '100%', padding: '10px', marginBottom: '10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '16px' }} type="text" name="Title" placeholder="Title" value={taskData.Title} onChange={handleChange} required />
         <input style={{ width: '100%', padding: '10px', marginBottom: '10px', border: '1px solid #ccc', borderRadius: '4px', fontSize: '16px' }} type="text" name="Description" placeholder="Description" value={taskData.Description} onChange={handleChange} required />
-        <button style={{ padding: '10px 20px', marginRight: '10px', fontSize: '16px', cursor: 'pointer', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px' }} type="submit">Add Task</button>
+        <button style={{ padding: '10px 20px', marginRight: '10px', fontSize: '16px', cursor: 'pointer', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px' }} type="submit">{editMode ? 'Update Task' : 'Add Task'}</button>
       </form>
       <ul style={{ listStyleType: 'none', padding: '0' }}>
         {tasks.length > 0 ? (
@@ -59,7 +71,7 @@ const TaskPage = () => {
             <li key={task.uid} style={{ margin: '10px 0', padding: '10px', backgroundColor: '#ffffff', border: '1px solid #e0e0e0', borderRadius: '4px' }}>
               <h3 style={{ marginTop: '0', fontSize: '20px' }}>{task.Title || 'No Title'}</h3>
               <p style={{ color: '#555' }}>{task.Description || 'No Description'}</p>
-              <button style={{ margin: '0 5px', padding: '10px 20px', fontSize: '16px', cursor: 'pointer', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px' }} onClick={() => handleUpdate(task.uid)}>Update</button>
+              <button style={{ margin: '0 5px', padding: '10px 20px', fontSize: '16px', cursor: 'pointer', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px' }} onClick={() => handleUpdate(task)}>Edit</button>
               <button style={{ margin: '0 5px', padding: '10px 20px', fontSize: '16px', cursor: 'pointer', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px' }} onClick={() => handleDelete(task.uid)}>Delete</button>
             </li>
           ))
