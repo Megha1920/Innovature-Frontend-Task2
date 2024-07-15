@@ -67,7 +67,7 @@ export const taskSlice = createSlice({
         state.tasks.push(action.payload);
       })
       .addCase(updateTask.fulfilled, (state, action) => {
-        const updatedTask = action.payload.data; // Assuming payload structure from backend
+        const updatedTask = action.payload.data; 
         const index = state.tasks.findIndex((task) => task.uid === updatedTask.uid);
         if (index !== -1) {
           state.tasks[index] = updatedTask;

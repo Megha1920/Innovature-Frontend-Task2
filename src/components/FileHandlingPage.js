@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { uploadFile, downloadFile } from '../redux/fileSlice';
 
 const FileHandlingPage = () => {
   const dispatch = useDispatch();
   const [file, setFile] = useState(null);
+  const files = useSelector((state) => state.file.files);
+  const fileStatus = useSelector((state) => state.file.status);
+  // const fileError = useSelector((state) => state.file.error);
+
+  useEffect(() => {
+  
+  }, []);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -18,7 +25,16 @@ const FileHandlingPage = () => {
   };
 
   const handleDownload = (fileId) => {
-    dispatch(downloadFile(fileId));
+    dispatch(downloadFile(fileId)).then((action) => {
+      if (action.payload && action.payload.url) {
+        const link = document.createElement('a');
+        link.href = action.payload.url;
+        link.setAttribute('download', action.payload.filename); 
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    });
   };
 
   // Inline styles
@@ -36,51 +52,51 @@ const FileHandlingPage = () => {
   const formStyle = {
     display: 'flex',
     flexDirection: 'column',
-    gap: '15px', // Increased gap between form elements
+    gap: '15px',
     marginBottom: '20px',
-    backgroundColor: '#ffffff', // Form background color
-    borderRadius: '8px',        // Rounded corners for the form
-    padding: '20px',            // Padding inside the form
-    boxShadow: '0 4px 8px rgba(0,0,0,0.1)', // Subtle shadow
-    maxWidth: '400px',          // Maximum width of the form
-    width: '100%',              // Full width within max width
+    backgroundColor: '#ffffff',
+    borderRadius: '8px',
+    padding: '20px',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+    maxWidth: '400px',
+    width: '100%',
   };
 
   const inputStyle = {
-    padding: '12px',            // Increased padding for the input
-    border: '1px solid #ddd',   // Light border
-    borderRadius: '4px',        // Rounded corners
+    padding: '12px',
+    border: '1px solid #ddd',
+    borderRadius: '4px',
     width: '100%',
-    boxSizing: 'border-box',    // Include padding and border in width
-    fontSize: '16px',           // Font size for better readability
-    outline: 'none',            // Remove default outline
-    transition: 'border-color 0.3s', // Smooth border color transition
+    boxSizing: 'border-box',
+    fontSize: '16px',
+    outline: 'none',
+    transition: 'border-color 0.3s',
   };
 
   const inputFocusStyle = {
-    borderColor: '#007bff',     // Border color on focus
+    borderColor: '#007bff',
   };
 
   const buttonStyle = {
-    backgroundColor: '#007bff', // Button background color
+    backgroundColor: '#007bff',
     border: 'none',
     color: '#ffffff',
-    padding: '12px 24px',        // Increased padding for better click area
-    borderRadius: '6px',         // Rounded corners
+    padding: '12px 24px',
+    borderRadius: '6px',
     cursor: 'pointer',
     fontSize: '16px',
-    transition: 'background-color 0.3s, box-shadow 0.3s', // Smooth transitions
-    boxShadow: '0 4px 6px rgba(0,0,0,0.1)', // Subtle shadow
+    transition: 'background-color 0.3s, box-shadow 0.3s',
+    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
   };
 
   const buttonHoverStyle = {
-    backgroundColor: '#0056b3', // Darker background color on hover
-    boxShadow: '0 6px 8px rgba(0,0,0,0.2)', // Deeper shadow on hover
+    backgroundColor: '#0056b3',
+    boxShadow: '0 6px 8px rgba(0,0,0,0.2)',
   };
 
   const buttonFocusStyle = {
-    outline: '2px solid #0056b3', // Outline on focus for accessibility
-    outlineOffset: '2px',          // Offset to avoid overlap with content
+    outline: '2px solid #0056b3',
+    outlineOffset: '2px',
   };
 
   return (
@@ -104,16 +120,26 @@ const FileHandlingPage = () => {
           Upload
         </button>
       </form>
-      <button
-        onClick={() => handleDownload('fileId')}
-        style={buttonStyle}
-        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor}
-        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor}
-        onFocus={(e) => e.currentTarget.style.outline = buttonFocusStyle.outline}
-        onBlur={(e) => e.currentTarget.style.outline = 'none'}
-      >
-        Download File
-      </button>
+      {fileStatus === 'loading' && <p>Loading...</p>}
+      {/* {fileError && <p>Error: {fileError}</p>} */}
+      <h2>Uploaded Files</h2>
+      <ul>
+        {files.map((file) => (
+          <li key={file.id}>
+            <span>{file.file}</span>
+            <button
+              onClick={() => handleDownload(file.id)}
+              style={buttonStyle}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = buttonHoverStyle.backgroundColor}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = buttonStyle.backgroundColor}
+              onFocus={(e) => e.currentTarget.style.outline = buttonFocusStyle.outline}
+              onBlur={(e) => e.currentTarget.style.outline = 'none'}
+            >
+              Download
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };

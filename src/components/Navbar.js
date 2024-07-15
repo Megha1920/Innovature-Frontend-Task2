@@ -11,51 +11,51 @@ const Navbar = () => {
     dispatch(logout());
   };
 
-  // Inline styles
+  
   const navStyle = {
-    backgroundColor: '#282c34', // Background color for the navbar
-    padding: '10px 20px',        // Padding around the navbar
-    color: '#ffffff',           // Text color
-    display: 'flex',            // Flexbox for layout
-    justifyContent: 'space-between', // Space out items
-    alignItems: 'center',       // Center items vertically
+    backgroundColor: '#282c34', 
+    padding: '10px 20px',        
+    color: '#ffffff',           
+    display: 'flex',            
+    justifyContent: 'space-between', 
+    alignItems: 'center',      
   };
 
   const ulStyle = {
-    listStyleType: 'none',      // Remove bullet points
-    padding: '0',               // Remove default padding
-    margin: '0',                // Remove default margin
-    display: 'flex',            // Flexbox for list items
+    listStyleType: 'none',      
+    padding: '0',               
+    margin: '0',                
+    display: 'flex',            
   };
 
   const liStyle = {
-    margin: '0 15px',           // Margin between list items
+    margin: '0 15px',           
   };
 
   const linkStyle = {
-    color: '#ffffff',           // Link color
-    textDecoration: 'none',     // Remove underline
-    fontSize: '16px',           // Font size
-    transition: 'color 0.3s',   // Smooth color transition
+    color: '#ffffff',           
+    textDecoration: 'none',     
+    fontSize: '16px',          
+    transition: 'color 0.3s',   
   };
 
   const buttonStyle = {
-    backgroundColor: '#61dafb', // Background color for the button
-    border: 'none',             // Remove border
-    color: '#282c34',           // Text color
-    padding: '8px 16px',        // Padding inside the button
-    cursor: 'pointer',          // Pointer cursor on hover
-    borderRadius: '4px',        // Rounded corners
-    fontSize: '16px',           // Font size
-    transition: 'background-color 0.3s', // Smooth background color transition
+    backgroundColor: '#61dafb', 
+    border: 'none',             
+    color: '#282c34',          
+    padding: '8px 16px',        
+    cursor: 'pointer',          
+    borderRadius: '4px',        
+    fontSize: '16px',          
+    transition: 'background-color 0.3s', 
   };
 
   const buttonHoverStyle = {
-    backgroundColor: '#21a1f1', // Darker background color on hover
+    backgroundColor: '#21a1f1', 
   };
 
   const linkHoverStyle = {
-    color: '#61dafb',           // Link color on hover
+    color: '#61dafb',          
   };
 
   return (

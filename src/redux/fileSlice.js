@@ -25,12 +25,7 @@ export const downloadFile = createAsyncThunk('file/downloadFile', async (fileId)
     responseType: 'blob',
   });
   const url = window.URL.createObjectURL(new Blob([response.data]));
-  const link = document.createElement('a');
-  link.href = url;
-  link.setAttribute('download', 'file.txt'); // Use the file name from the response
-  document.body.appendChild(link);
-  link.click();
-  return response.data;
+  return { url, filename: 'file.txt' }; 
 });
 
 export const fileSlice = createSlice({
@@ -40,6 +35,7 @@ export const fileSlice = createSlice({
     status: 'idle',
     error: null,
   },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(uploadFile.fulfilled, (state, action) => {

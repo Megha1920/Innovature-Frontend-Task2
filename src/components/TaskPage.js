@@ -35,13 +35,13 @@ const TaskPage = () => {
     if (editMode && currentTask) {
       const updatedTask = { ...taskData, uid: currentTask.uid, user: currentTask.user };
       dispatch(updateTask(updatedTask)).then(() => {
-        setEditMode(false); // Reset edit mode after update
-        setCurrentTask(null); // Clear current task after update
+        setEditMode(false); 
+        setCurrentTask(null); 
       });
     } else {
       dispatch(createTask(newTask));
     }
-    setTaskData({ Title: '', Description: '' }); // Clear form fields after submission
+    setTaskData({ Title: '', Description: '' }); 
   };
   
   const handleUpdate = (task) => {
